@@ -22,7 +22,10 @@ tensors.ParseFromString(''.join(open(f).read() for f in file_parts))
 if not isdir(OUTDIR):
 	os.makedirs(OUTDIR)
 
-for param in tensors.protos:
+for idx, param in enumerate(tensors.protos, 1):
+	print "extracting {} / {} params...\r".format(idx, len(tensors.protos))
 	with open(join(OUTDIR, "{}.pkl".format(param.name)), "wb") as out:
 		pickle.dump(utils.Caffe2TensorToNumpyArray(param), out)
+
+print 
     
