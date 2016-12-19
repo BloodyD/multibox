@@ -24,8 +24,10 @@ if not isdir(OUTDIR):
 
 for idx, param in enumerate(tensors.protos, 1):
 	print "extracting {} / {} params...\r".format(idx, len(tensors.protos))
-	with open(join(OUTDIR, "{}.pkl".format(param.name)), "wb") as out:
-		pickle.dump(utils.Caffe2TensorToNumpyArray(param), out)
+	if param.name != "nn0_w": continue
+	import pdb; pdb.set_trace()
+	# with open(join(OUTDIR, "{}.pkl".format(param.name)), "wb") as out:
+	# 	pickle.dump(utils.Caffe2TensorToNumpyArray(param), out)
 
-print 
-    
+print
+
