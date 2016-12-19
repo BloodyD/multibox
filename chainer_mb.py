@@ -43,12 +43,13 @@ class Mixed1(chainer.Chain):
 
 class Mixed2(chainer.Chain):
 	def __init__(self, outputs):
+		assert len(outputs) == 5, "there should be 5 output counts"
 		super(Mixed2, self).__init__(
-			conv3x3_bottleneck = L.Convolution2D(None, ..., ksize=1, stride=1, pad=2),
-			conv3x3 = L.Convolution2D(None, ..., ksize=3, stride=2, pad=2),
-			conv3x3d_bottleneck = L.Convolution2D(None, ..., ksize=1, stride=1, pad=2),
-			conv3x3d_pre = L.Convolution2D(None, ..., ksize=3, stride=1, pad=2),
-			conv3x3d = L.Convolution2D(None, ..., ksize=3, stride=2, pad=2),
+			conv3x3_bottleneck = L.Convolution2D(None, outputs[0], ksize=1, stride=1, pad=2),
+			conv3x3 = L.Convolution2D(None, outputs[1], ksize=3, stride=2, pad=2),
+			conv3x3d_bottleneck = L.Convolution2D(None, outputs[2], ksize=1, stride=1, pad=2),
+			conv3x3d_pre = L.Convolution2D(None, outputs[3], ksize=3, stride=1, pad=2),
+			conv3x3d = L.Convolution2D(None, outputs[4], ksize=3, stride=2, pad=2),
 		)
 
 	def __call__(self, X):
@@ -74,24 +75,24 @@ class Net(chainer.Chain):
 			conv1 = L.Convolution2D(None, 64, kernel=1, stride=1, pad=1),
 			conv2 = L.Convolution2D(None, 192, kernel=3, stride=1, pad=2),
 
-			mixed3a = Mixed1(outputs=[64, 64, 64, 64, 96, 96, 32], pooling="avg"),
-			mixed3b = Mixed1(outputs=[64, 64, 96, 64, 96, 96, 64], pooling="avg"),
-			mixed3c = Mixed2(outputs=[]),
+			mixed3a = Mixed1(outputs=[64,  64,  64, 64, 96, 96, 32], pooling="avg"),
+			mixed3b = Mixed1(outputs=[64,  64,  96, 64, 96, 96, 64], pooling="avg"),
+			mixed3c = Mixed2(outputs=[128, 160, 64, 96, 96]),
 
 			mixed4a = Mixed1(outputs=[224, 64,  96,  96,  128, 128, 128], pooling="avg"),
 			mixed4b = Mixed1(outputs=[192, 96,  128, 96,  128, 128, 128], pooling="avg"),
 			mixed4c = Mixed1(outputs=[160, 128, 160, 128, 160, 160, 96], pooling="avg"),
 			mixed4d = Mixed1(outputs=[96,  128, 192, 160, 192, 192, 96], pooling="avg"),
-			mixed4e = Mixed2(outputs=[]),
+			mixed4e = Mixed2(outputs=[128, 192, 192, 256, 256]),
 
 			mixed5a = Mixed1(outputs=[352, 192, 320, 160, 224, 224, 128], pooling="avg"),
 			mixed5b = Mixed1(outputs=[352, 192, 320, 192, 224, 224, 128], pooling="max"),
 
-			fc6 = L.Linear(None, ...),
-			fc7 = L.Linear(None, ...),
+			fc6 = L.Linear(None, 4096),
+			fc7 = L.Linear(None, 4096),
 
-			location = L.Linear(None, ...),
-			confidence = L.Linear(None, ...),
+			location = L.Linear(None, 3200),
+			confidence = L.Linear(None, 800),
 		)
 
 	def __call__(self, X):
